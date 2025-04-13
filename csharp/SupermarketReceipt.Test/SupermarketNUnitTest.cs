@@ -1,3 +1,4 @@
+using Moq;
 using NUnit.Framework;
 
 namespace SupermarketReceipt.Test
@@ -8,7 +9,7 @@ namespace SupermarketReceipt.Test
         public void TenPercentDiscount()
         {
             // ARRANGE
-            SupermarketCatalog catalog = new FakeCatalog();
+            ISupermarketCatalog catalog = new FakeCatalog();
             var toothbrush = new Product("toothbrush", ProductUnit.Each);
             catalog.AddProduct(toothbrush, 0.99);
             var apples = new Product("apples", ProductUnit.Kilo);
@@ -17,7 +18,7 @@ namespace SupermarketReceipt.Test
             var cart = new ShoppingCart();
             cart.AddItemQuantity(apples, 2.5);
 
-            var teller = new Teller(catalog);
+            var teller = new Teller(catalog, Mock.Of<IDiscountCalculator>());
             teller.AddSpecialOffer(SpecialOfferType.TenPercentDiscount, toothbrush, 10.0);
 
             // ACT

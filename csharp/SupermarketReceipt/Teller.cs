@@ -4,12 +4,14 @@ namespace SupermarketReceipt
 {
     public class Teller
     {
-        private readonly SupermarketCatalog _catalog;
+        private readonly ISupermarketCatalog _catalog;
+        private readonly IDiscountCalculator _discountCalculator;
         private readonly Dictionary<Product, Offer> _offers = new Dictionary<Product, Offer>();
 
-        public Teller(SupermarketCatalog catalog)
+        public Teller(ISupermarketCatalog catalog, IDiscountCalculator discountCalculator)
         {
             _catalog = catalog;
+            _discountCalculator = discountCalculator;
         }
 
         public void AddSpecialOffer(SpecialOfferType offerType, Product product, double argument)
@@ -30,7 +32,10 @@ namespace SupermarketReceipt
                 receipt.AddProduct(p, quantity, unitPrice, price);
             }
 
-            theCart.HandleOffers(receipt, _offers, _catalog);
+            foreach (var discount in _discountCalculator.CalculateDiscount(_offers, theCart.Quantities))
+            {
+                receipt.AddDiscount(discount);
+            }
 
             return receipt;
         }
