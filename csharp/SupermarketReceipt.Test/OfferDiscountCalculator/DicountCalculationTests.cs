@@ -42,4 +42,41 @@ public class DicountCalculationTests
         Assert.Throws<NotImplementedException>(() => sut.Discount(quantityAsInt, unitPrice, 3, 3, p));
         Assert.True(sut.Criteria(offer, unitPrice));
     }
+
+    [Fact]
+    public void FiveForAmountDiscount()
+    {
+        var sut = new FiveForAmountDiscount();
+        var p = new Product(Guid.NewGuid().ToString(), ProductUnit.Kilo);
+        var offer = new Offer(SpecialOfferType.FiveForAmount, p, 10);
+        var unitPrice = 10;
+        var quantityAsInt = 2;
+        var x = 3;
+
+        Assert.True(sut.Criteria(offer, unitPrice));
+        Assert.Throws<NotImplementedException>(() => sut.Discount(quantityAsInt, unitPrice, 3, 3, p));
+        Assert.Throws<NotImplementedException>(() => sut.Discount(offer, quantityAsInt, x, unitPrice, quantityAsInt, p));
+    }
+
+    [Fact]
+    public void ThreeForTwoDiscount()
+    {
+        var sut = new ThreeForTwoDiscount();
+        var p = new Product(Guid.NewGuid().ToString(), ProductUnit.Kilo);
+        var offer = new Offer(SpecialOfferType.ThreeForTwo, p, 10);
+        var unitPrice = 10;
+        var quantity = 2;
+        var x = 3;
+        var numberOfXs = 3;
+        var quantityAsInt = 4;
+        var discount = sut.Discount(quantity, unitPrice, numberOfXs, quantityAsInt, p);
+
+        var expected = quantity * unitPrice -
+                             (numberOfXs * 2 * unitPrice + quantityAsInt % 3 * unitPrice);
+        Assert.Equal(-expected, discount.DiscountAmount);
+        Assert.Equal("3 for 2", discount.Description);
+
+        Assert.Throws<NotImplementedException>(() => sut.Discount(offer, quantity, x, unitPrice, quantity, p));
+        Assert.True(sut.Criteria(offer, unitPrice));
+    }
 }
