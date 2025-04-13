@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Moq;
-using NUnit.Framework;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -29,6 +27,6 @@ public class TellerTests
         var actualDiscount = Assert.Single(receipt.GetDiscounts());
         Assert.Equal(product, actualDiscount.Product);
         Assert.Equal(amount, actualDiscount.DiscountAmount);
-
+        Assert.False(actualDiscount.Product.Equals(null));
     }
 }
